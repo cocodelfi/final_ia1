@@ -50,7 +50,7 @@ class World {
     }
 
     keyTyped() {
-        if (this.currentScene) { //parar sonido aca?
+        if (this.currentScene) {
             this.currentScene.keyTyped();
         } else {
             console.error('Error, no hay pantalla actual definida');

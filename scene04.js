@@ -1,88 +1,71 @@
-class Scene04 extends Scene {//ojos/personas/imagenes del espacio, AGREGAR SONIDO
+class Scene04 extends Scene {
     constructor() {
         super();
         this.images = [];
         this.fallingImages = [];
-        this.loadImages();
-        this.credits = [ //a verse
-            "Constanza Delfina Schweers",
-            "Espacial",
-            "2024",
-            "Informatica Aplicada I",
+        this.verse = [
+            "En la danza cósmica de la existencia, somos uno con el universo.",
+            "Cada átomo en nosotros fue una vez parte de una estrella.",
         ];
+        this.maxImages = 15;
+        this.initializeFallingImages();
     }
 
-    loadImages() {
-        this.images.push(loadImage('assets/eye1.jpg'));
-        this.images.push(loadImage('assets/eye2.jpg'));
-        this.images.push(loadImage('assets/person1.jpg'));
-        this.images.push(loadImage('assets/person2.jpg'));
+    initializeFallingImages() {
+        for (let i = 0; i < this.maxImages; i++) {
+            let randomImg = random(imagesScene04);
+            let x = random(width);
+            let y = random(-randomImg.height, height);
+            let speed = random(0.5, 1.5);
+            this.fallingImages.push(new FallingImage(randomImg, x, y, speed, 200));
+        }
     }
 
     draw() {
-        super.draw();
-        background(0); 
-
-        // Añadir nuevas imágenes ocasionalmente
-        if (frameCount % 30 === 0 && this.fallingImages.length < 15) { // Añade una nueva imagen cada 30 frames, hasta un máximo de 15
-            this.addNewFallingImage();
-        }
-
-        // Actualizar y dibujar imágenes cayendo
+        background(0);
         for (let i = this.fallingImages.length - 1; i >= 0; i--) {
             let img = this.fallingImages[i];
             img.update();
             img.display();
-
-            // Eliminar imágenes que han salido de la pantalla
-            if (img.y > height + img.height) {
+            if (img.y > height + img.img.height / 2) {
                 this.fallingImages.splice(i, 1);
+                this.addNewFallingImage();
             }
         }
-        this.drawCredits();
+        this.drawVerse();
+        this.playSound();
     }
 
     addNewFallingImage() {
-        let randomImg = random(this.images);
+        let randomImg = random(imagesScene04);
         let x = random(width);
-        let y = -randomImg.height;
-        let speed = random(1, 3);
-        let rotation = random(TWO_PI);
-        let rotationSpeed = random(-0.05, 0.05);
-        this.fallingImages.push(new FallingImage(randomImg, x, y, speed, rotation, rotationSpeed));
+        let y = -randomImg.height / 2;
+        let speed = random(0.5, 1.5);
+        this.fallingImages.push(new FallingImage(randomImg, x, y, speed, 200));
     }
 
-    drawCredits() {
+    drawVerse() {
+        fill(0, 150);
+        noStroke();
+        rectMode(CENTER);
+        rect(width / 2, height / 2, width * 0.8, 100);
         fill(255);
-        textAlign(CENTER, BOTTOM);
+        textAlign(CENTER, CENTER);
         textSize(24);
-        
-        let y = height - 20; // Empezamos 20 píxeles desde abajo
-        for (let i = this.credits.length - 1; i >= 0; i--) {
-            text(this.credits[i], width / 2, y);
-            y -= 25; // Movemos hacia arriba para el siguiente crédito
+        text(this.verse.join('\n'), width / 2, height / 2);
+    }
+    playSound() {
+        //reproducir sonido en loop
+        if (!this.soundPlayed) {
+            soundScene04.loop();
+            this.soundPlayed = true;
         }
     }
-
-    keyTyped() {
-        super.keyTyped();
-    }
-    windowResized() {
-        super.windowResized();
-    }
-    mousePressed() {
-        super.mousePressed();
-    }
-    mouseDragged() {
-        super.mouseDragged();
-    }
-    mouseReleased() {
-        super.mouseReleased();
-    }
-    keyTyped() {
-        super.keyTyped();
-    }
-    windowResized() {
-        super.windowResized();
+    stopSound() {//detener al cambiar de escena
+        super.stopSound();
+        if (soundScene04.isPlaying()) {
+            soundScene04.stop();
+        }
+        this.soundPlayed = false;
     }
 }

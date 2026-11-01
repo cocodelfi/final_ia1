@@ -2,7 +2,7 @@
 class Scene01 extends Scene {
     constructor() {
         super();
-        this.soundPlayed = false; //!!cambiar sonido, zumbido
+        this.soundPlayed = false;
         this.stars = [];
         this.numStars = 1500; //número de estrellas
         for (let i = 0; i < this.numStars; i++) { //inicializar array, crear objetos star
@@ -13,6 +13,8 @@ class Scene01 extends Scene {
     draw() {
         super.draw();
         background(0);
+        // dibujar el texto de instrucción
+        this.drawInstructionText();
         //calcular y aplicar la velocidad basada en la posición del mouse
         let speed = this.calculateSpeed();
         translate(width / 2, height / 2); //centrar el sistema de coordenadas
@@ -20,6 +22,7 @@ class Scene01 extends Scene {
         this.updateAndShowStars(speed);
         //reproducir sonido
         this.playSound();
+        
     }
 
     calculateSpeed() {
@@ -49,9 +52,13 @@ class Scene01 extends Scene {
         let volume = map(distCentro, 0, maxDist, 1, 0); //amplitud varía de 1 a 0
         soundScene01.amp(volume); //aplicar amplitud
     }
-
-    keyTyped() {
-        super.keyTyped();
+    drawInstructionText() {
+        push();
+        textAlign(LEFT, BOTTOM);
+        textSize(22);
+        fill(255);
+        text("Deslice el mouse", 10, height - 10); // Dibujar el texto en la esquina inferior izquierda
+        pop();
     }
 
     stopSound() {//detener al cambiar de escena
@@ -62,7 +69,4 @@ class Scene01 extends Scene {
         this.soundPlayed = false;
     }
 
-    windowResized() {
-        super.windowResized();
-    }
 }

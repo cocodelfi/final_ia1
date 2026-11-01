@@ -1,4 +1,4 @@
-class Scene03 extends Scene {//explosiones, incorporar colores AGREGAR SONDIO
+class Scene03 extends Scene {//explosiones, incorpora colores AGREGAR SONDIO
     constructor() {
         super();
         this.balls = [];
@@ -28,12 +28,12 @@ class Scene03 extends Scene {//explosiones, incorporar colores AGREGAR SONDIO
         ];
         pixelDensity(4);
         angleMode(DEGREES);
+        this.sounds = soundScene03;    
     }
 
-
-    draw() {//!!escena 3. definir grafico,sonido,interaccion
+    draw() {
         super.draw();
-        background(0, 50); // Slight fading effect
+        background(0, 50);
         for (let i = this.balls.length - 1; i >= 0; i--) {
             this.balls[i].update();
             this.balls[i].draw();
@@ -42,16 +42,19 @@ class Scene03 extends Scene {//explosiones, incorporar colores AGREGAR SONDIO
                 this.balls.splice(i, 1);
             }
         }
+        this.drawInstructionText();
     }
 
     mousePressed() {
         super.mousePressed();
+        //sonido aleatorio
+        let randomSound = random(this.sounds);
+        randomSound.play();
         let numBalls = 500;
         let innerRadius = 70;
         let outerRadius = 150;
         let colorArray = random(this.colorArrays);
         let center = createVector(mouseX, mouseY);
-
         for (let i = 0; i < numBalls; i++) {
             let angle = random(360);
             let radius = random(innerRadius, outerRadius);
@@ -70,19 +73,13 @@ class Scene03 extends Scene {//explosiones, incorporar colores AGREGAR SONDIO
         }
     }
 
-    mouseDragged() {
-        super.mouseDragged();
+    drawInstructionText() {
+        push();
+        textAlign(LEFT, BOTTOM);
+        textSize(22);
+        fill(255);
+        text("Presione", 10, height - 10);
+        pop();
     }
 
-    mouseReleased() {
-        super.mouseReleased();
-    }
-
-    keyTyped() {
-        super.keyTyped();
-    }
-
-    windowResized() {
-        super.windowResized();
-    }
 }

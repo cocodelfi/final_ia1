@@ -1,61 +1,61 @@
-class Scene00 extends Scene {
-    //!!!EMPROLIJAR PORFA. clase con estrellas y agujero para meter como objeto?
+class Scene00 extends Scene {//pantalla inicial
     constructor() {
         super();
-        //inicializar propiedades
+        //inicializar propiedades. n estrellas, centro de pantalla, radio de agujero negro, estrellas iniciales
         this.stars = [];
-        this.numStars = 1000;//n estrellas
+        this.numStars = 1000;
         this.centerX = width / 2;
         this.centerY = height / 2;
         this.blackHoleRadius = min(width, height) * 0.1;
         this.maxRadius = sqrt(width * width + height * height) / 2;
-
-        for (let i = 0; i < this.numStars; i++) {//estrellas iniciales
+        for (let i = 0; i < this.numStars; i++) {
             this.stars.push(this.createStar());
         }
 
         this.menuItems = [
-            { label: "Información", scene: 0 },
-            { label: "Exploración", scene: 1 },
-            { label: "Conexiones", scene: 2 },
-            { label: "Explosiones", scene: 3 },
-            { label: "Unión", scene: 4 },
+            //opciones nav
+            { label: "00 - información", scene: 0 },
+            { label: "01 - exploración", scene: 1 },
+            { label: "02 - conexión", scene: 2 },
+            { label: "03 - supernova", scene: 3 },
+            { label: "04 - unión", scene: 4 },
         ];
+        //popup invisible, sin contenido
         this.showPopup = false;
         this.popupContent = '';
     }
 
     draw() {
         super.draw();
-        background(0);//fondo negro
-        this.drawBlackHole();//dibujo agujero negro
-        fill(255); //blanco para estrellas
-        for (let star of this.stars) {//dibujo y actualizo
+        //fondo negro, agujero negro, estrellas blancas de extremos hacia centro
+        background(0);
+        this.drawBlackHole();
+        fill(255);
+        for (let star of this.stars) {
             this.updateStar(star);
             this.drawStar(star);
         }
+        //titulo, menu de navegacion y popup cuando visible
         this.drawTitle();
         this.drawMenu();
         this.drawPopup();
     }
 
     drawMenu() {
+        //nav
         push();
         textAlign(CENTER, CENTER);
         textSize(26);
         fill(255);
+        //ancho de menu, de elementos, posicion en x e y, color fondo y teto
         let menuWidth = width * 0.8;
         let itemWidth = menuWidth / this.menuItems.length;
         let startX = width * 0.1;
         let y = height * 0.95;
-
         for (let i = 0; i < this.menuItems.length; i++) {
             let x = startX + itemWidth * (i + 0.5);
-
-            // Dibuja un rectángulo semitransparente detrás del texto
             fill(0, 100);
             rect(startX + itemWidth * i, y - 20, itemWidth, 40);
-
             fill(255);
             text(this.menuItems[i].label, x, y);
         }
@@ -63,52 +63,61 @@ class Scene00 extends Scene {
     }
 
     drawTitle() {
+        //titulo centrado, color, tamaño
         push();
         textAlign(CENTER, CENTER);
         textSize(40);
         fill(255);
-        text("Nuestros átomos", this.centerX, height * 0.1);
+        text("human experience", this.centerX, height * 0.1);
         pop();
     }
 
     drawPopup() {
+        // cuando el popup esta visible
         if (this.showPopup) {
+            //fondo semitransparente, alto, ancho, posicion x e y, color, alineacion, tamaño,
             push();
+            rectMode(CENTER);
             fill(0, 230);
-            rect(width * 0.15, height * 0.15, width * 0.7, height * 0.7, 20); // Reducir tamaño del popup
+            let popupWidth = width * 0.5;
+            let popupHeight = height * 0.5;
+            let popupX = width / 2;
+            let popupY = height / 2;
+            rect(popupX, popupY, popupWidth, popupHeight, 20);
             fill(255);
             textAlign(CENTER, CENTER);
             textSize(36);
-            text("Acerca de la Obra", width * 0.5, height * 0.2);
+            text("Acerca de la Obra", popupX, popupY - popupHeight / 2 + 50);
             textSize(24);
             textAlign(LEFT, TOP);
-            text(this.formatPopupContent(this.popupContent), width * 0.175, height * 0.25, width * 0.65, height * 0.5);
+            this.displayJustifiedText(this.popupContent, popupX - popupWidth / 2 + 20, popupY - popupHeight / 2 + 100, popupWidth - 40, 24);
             textAlign(CENTER, CENTER);
             textSize(22);
-            text("Haz clic para cerrar", width * 0.5, height * 0.8);
+            text("Haz clic para cerrar", popupX, popupY + popupHeight / 2 - 40);
             pop();
         }
     }
 
-    formatPopupContent(content) {
-        // Función para agregar saltos de línea al contenido del popup
-        let formattedContent = "";
-        let maxLineLength = 60; // Longitud máxima de línea
-        let words = content.split(" ");
-        let line = "";
-
-        for (let word of words) {
-            if (line.length + word.length + 1 <= maxLineLength) {
-                line += word + " ";
+    displayJustifiedText(content, x, y, maxWidth, lineHeight) {
+        //dibuja texto justificado
+        let words = content.split(' ');//dividir contenido en palabras
+        let currentLine = '';
+        let lines = [];
+        for (let i = 0; i < words.length; i++) {
+            let testLine = currentLine + words[i] + ' ';
+            let testWidth = textWidth(testLine);
+            if (testWidth > maxWidth && i > 0) {
+                lines.push(currentLine);
+                currentLine = words[i] + ' ';
             } else {
-                formattedContent += line + "\n";
-                line = word + " ";
+                currentLine = testLine;
             }
         }
-        formattedContent += line;
-        return formattedContent;
+        lines.push(currentLine);
+        for (let i = 0; i < lines.length; i++) {
+            text(lines[i], x, y + (i * lineHeight));
+        }
     }
-
 
     createStar() {
         // Generar posición aleatoria en toda la pantalla
@@ -116,7 +125,7 @@ class Scene00 extends Scene {
         do {
             x = random(width); y = random(height);
         } while (this.isInsideBlackHole(x, y));
-
+        //tamaño y velocidad aleatoria de estrella
         return {
             x: x,
             y: y,
@@ -126,6 +135,7 @@ class Scene00 extends Scene {
     }
 
     isInsideBlackHole(x, y) {
+        //verifica si una posicion esta dentro del circulo negro
         let dx = this.centerX - x;
         let dy = this.centerY - y;
         let distance = sqrt(dx * dx + dy * dy);
@@ -137,7 +147,6 @@ class Scene00 extends Scene {
         let dx = this.centerX - star.x;//diferencia en x e y
         let dy = this.centerY - star.y; //distancia al centro
         let distance = sqrt(dx * dx + dy * dy);
-
         if (distance > this.blackHoleRadius) {
             //mover la estrella hacia el centro si está fuera del agujero
             star.x += (dx / distance) * star.speed;
@@ -159,59 +168,49 @@ class Scene00 extends Scene {
     }
 
     mousePressed() {
-        //!! cambiar sonido. no definitivo
-
         super.mousePressed();
         if (this.showPopup) {
+            //cierra el popup si esta abierto
             this.showPopup = false;
             return;
         }
-
+        //ancho de menu, ancho de elementos, posicion en x e y de menu
         let menuWidth = width * 0.8;
         let itemWidth = menuWidth / this.menuItems.length;
         let startX = width * 0.1;
         let y = height * 0.95;
-
         for (let i = 0; i < this.menuItems.length; i++) {
-            let x = startX + itemWidth * (i + 0.5);
-            if (mouseX > startX + itemWidth * i && mouseX < startX + itemWidth * (i + 1) &&
-                mouseY > y - 20 && mouseY < y + 20) {
+            let x = startX + itemWidth * i;
+            //limite izq y derecho de elemento de menu
+            let itemX1 = x;
+            let itemX2 = x + itemWidth;
+            if (mouseX > itemX1 && mouseX < itemX2 && mouseY > y - 20 && mouseY < y + 20) {
+                //muestra popup informacion (item00)
                 if (this.menuItems[i].scene === 0) {
                     this.showPopup = true;
-                    this.popupContent = "Bienvenido a 'Exploración Espacial'.\n\nEsta obra interactiva te llevará a través de un viaje cósmico, explorando las conexiones entre el universo y la humanidad. Cada escena representa un aspecto diferente de nuestra relación con el cosmos, desde la exploración hasta las conexiones que compartimos como seres humanos en este vasto universo.\n\nPara avanzar presiona 'D'. Para retorceder presiona 'A'.";
-                    soundScene00.play();
+                    this.popupContent = "Te invito a un viaje por el cosmos interior y exterior, donde las estrellas son parte de nosotros y nosotros, universos. \n\nPara avanzar presiona 'D'.  Para retorceder presiona 'A'.\n\nConstanza Schweers,  2024,  Informatica Aplicada 1.";
                 } else {
                     // Cambiar a la escena correspondiente
                     world.elegirScene(this.menuItems[i].scene);
-                    soundScene00.play();
                     console.log(`Cambiando a la escena ${this.menuItems[i].scene}`);
                 }
+                soundScene00.play();
                 break;
             }
         }
     }
 
     windowResized() {
+        //redimensionar ventana
         super.windowResized();
+        //actualiza todos los valores
         this.centerX = width / 2;
         this.centerY = height / 2;
         this.blackHoleRadius = min(width, height) * 0.1;
         this.maxRadius = sqrt(width * width + height * height) / 2;
-
-        // Reposicionar las estrellas existentes
         for (let star of this.stars) {
             Object.assign(star, this.createStar());
         }
-    }
-
-    keyTyped() {
-        super.keyTyped();
-    }
-    mouseDragged() {
-        super.mouseDragged();
-    }
-    mouseReleased() {
-        super.mouseReleased();
     }
 
     stopSound() {
