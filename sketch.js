@@ -56,25 +56,35 @@ function draw() {
 }
 
 function keyTyped() { //navegacion
-  if (key === 'a' || key === 'A') {
-    world.keyTyped();
-    world.currentScene.stopSound();
-    world.previaScene();
-  } else if (key === 'd' || key === 'D') {
-    world.keyTyped();
-    world.currentScene.stopSound();
-    world.proximaScene();
+  if (world && world.currentScene) {
+    if (key === 'a' || key === 'A') {
+      world.keyTyped();
+      world.currentScene.stopSound();
+      world.previaScene();
+    } else if (key === 'd' || key === 'D') {
+      world.keyTyped();
+      world.currentScene.stopSound();
+      world.proximaScene();
+    }
   }
 }
 
 function mousePressed() {
-  world.currentScene.mousePressed();
+  if (world && world.currentScene) {
+    world.currentScene.mousePressed();
+  }
 }
+
 function mouseDragged() {
-  world.currentScene.mouseDragged();
+  if (world && world.currentScene) {
+    world.currentScene.mouseDragged();
+  }
 }
+
 function mouseReleased() {
-  world.currentScene.mouseReleased();
+  if (world && world.currentScene) {
+    world.currentScene.mouseReleased();
+  }
 }
 function windowResized() {
   world.currentScene.windowResized();
